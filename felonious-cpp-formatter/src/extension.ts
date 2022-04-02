@@ -49,18 +49,19 @@ export function activate(context: vscode.ExtensionContext) {
 					const currentLine: vscode.TextLine = document.lineAt(i);
 					let lineLen: number = currentLine.text.length;
 					const patterns = tailFindingHelper.exec(currentLine.text);
-					const totalPatterns = totalPatternFindingHelper.exec(currentLine.text);
-					//console.log(`Out: Line ${i + 1}, totalPatterns ${totalPatterns}`);
+					//console.log(`Out: Line ${i + 1}, patterns ${patterns}`);
 
 					// Only if the line is not processed in totalPatterns
 					// do we do this process. Otherwise VSCode will concurrently 
 					// do the edit and fuck up real bad
-					if (patterns !== null && !noNewLineLines.has(i)) {
-						let patternLen: number = patterns[0].length;
+					if (!noNewLineLines.has(i)) {
+						let patternLen: number = patterns !== null ? patterns[0].length : 0;
 						//console.log(`Line ${i + 1}, pattern ${patterns[0]}`);
-						const newEdit = vscode.TextEdit.insert(currentLine.range.end.translate(0, -patternLen), 
-															   " ".repeat(maxLength - lineLen));
-						edits.push(newEdit); 
+						if (noNewLineLines.has(i + 1) || patternLen !== 0) {
+							const newEdit = vscode.TextEdit.insert(currentLine.range.end.translate(0, -patternLen), 
+																   " ".repeat(maxLength - lineLen - (patternLen !== 0 ? 0 : 1)));
+							edits.push(newEdit); 
+						}
 					}
 				}
 				return edits;
