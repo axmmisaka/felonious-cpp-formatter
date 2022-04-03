@@ -32,16 +32,19 @@ export function activate(context: vscode.ExtensionContext) {
 				maxLength += 3;
 				const tailFindingHelper : RegExp = new RegExp(/[\{\}\;]+$/, "m");
 				const totalPatternFindingHelper : RegExp = new RegExp(/^(\s*)([\{\}\;]+)$/, "m");
-
+				
+				// This records line numbers which the newline preceding is removed
 				const noNewLineLines : Set<number> = new Set<number>();
 				for (let i : number = 0; i <= document.lineCount - 1; ++i) {
 					const currentLine: vscode.TextLine = document.lineAt(i);
 					const totalPatterns = totalPatternFindingHelper.exec(currentLine.text);
 					if (totalPatterns !== null && i - 1 >= 0 && document.lineAt(i - 1).text.indexOf("//") === -1) {
+						// Remove all whitespace preceding
 						edits.push(vscode.TextEdit.delete(new vscode.Range(currentLine.range.start,
 							currentLine.range.start.translate(0, totalPatterns[1] !== null ?totalPatterns[1].length:0))));
-							edits.push(new vscode.TextEdit(new vscode.Range(document.lineAt(i - 1).range.end, currentLine.range.start), ""));
-							noNewLineLines.add(i);
+						// Then remove newline in the last line
+						edits.push(new vscode.TextEdit(new vscode.Range(document.lineAt(i - 1).range.end, currentLine.range.start), ""));
+						noNewLineLines.add(i);
 					}
 				}
 
@@ -57,8 +60,10 @@ export function activate(context: vscode.ExtensionContext) {
 					if (!noNewLineLines.has(i)) {
 						let patternLen: number = patterns !== null ? patterns[0].length : 0;
 						//console.log(`Line ${i + 1}, pattern ${patterns[0]}`);
+						// Pattern either detected or from next lines
 						if (noNewLineLines.has(i + 1) || patternLen !== 0) {
 							const newEdit = vscode.TextEdit.insert(currentLine.range.end.translate(0, -patternLen), 
+																// If there are patterns, leave one space for them
 																   " ".repeat(maxLength - lineLen - (patternLen !== 0 ? 0 : 1)));
 							edits.push(newEdit); 
 						}
