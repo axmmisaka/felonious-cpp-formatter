@@ -4,7 +4,7 @@
 	"description": "A Pythonic C++ formatter that deserves capital punishment",
 	"publisher": "axmmisaka",
 	"license": "(WTFPL OR BSD 3-Clause)",
-	"version": "0.0.1",
+	"version": "0.0.2341",
 	"engines": {
 		"vscode": "^1.66.0"
 	},
