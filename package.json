@@ -8,6 +8,10 @@
 	"engines": {
 		"vscode": "^1.66.0"
 	},
+	"repository": {
+		"url": "https://github.com/axmmisaka/felonious-cpp-formatter",
+		"type": "git"
+	},
 	"categories": [
 		"Formatters",
 		"Other"
